@@ -1,12 +1,12 @@
 import java.util.concurrent.CountDownLatch;
 
-public class ProcessadorCalibracao implements Runnable {
+public class ProcessadorCalibracaoCountD implements Runnable {
     private final String[] linhas;
     private final long[] resultados;
     private final int indice;
     private final CountDownLatch latch;
 
-    public ProcessadorCalibracao(String[] linhas, long[] resultados, int indice, CountDownLatch latch) {
+    public ProcessadorCalibracaoCountD(String[] linhas, long[] resultados, int indice, CountDownLatch latch) {
         this.linhas = linhas;
         this.resultados = resultados;
         this.indice = indice;

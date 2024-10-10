@@ -1,12 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 
 public class Main {
     public static void main(String[] args) {
         long tempoInicial = System.currentTimeMillis();
-        String caminhoArquivo = "C:\\Users\\NOME_DO_PC\\IdeaProjects\\calibration java\\new_calibration_text.txt";
+        String caminhoArquivo = "C:\\Users\\Alex F\\IdeaProjects\\calibration java\\new_calibration_text.txt";
 
         String[] calibracoes = lerArquivo(caminhoArquivo);
         if (calibracoes == null) {
@@ -17,7 +16,7 @@ public class Main {
         long[] resultados = new long[numThreads];
         int linhasPorThread = calibracoes.length / numThreads;
 
-        CountDownLatch latch = new CountDownLatch(numThreads);
+        Thread[] threads = new Thread[numThreads];
 
         for (int i = 0; i < numThreads; i++) {
             int startIndex = i * linhasPorThread;
@@ -25,14 +24,17 @@ public class Main {
             String[] linhasParaProcessar = new String[endIndex - startIndex];
             System.arraycopy(calibracoes, startIndex, linhasParaProcessar, 0, endIndex - startIndex);
 
-            new Thread(new ProcessadorCalibracao(linhasParaProcessar, resultados, i, latch)).start();
+            threads[i] = new Thread(new ProcessadorCalibracao(linhasParaProcessar, resultados, i));
+            threads[i].start();
         }
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.err.println("Erro ao aguardar as threads: " + e.getMessage());
+        for (int i = 0; i < numThreads; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Erro ao aguardar as threads: " + e.getMessage());
+            }
         }
 
         long somaTotal = 0;
